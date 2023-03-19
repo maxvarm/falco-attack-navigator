@@ -1,0 +1,566 @@
+[
+  {
+    "enabled": true,
+    "name": "Modify Shell Configuration File",
+    "desc": "Detect attempt to modify shell configuration files",
+    "condition": "open_write and (fd.filename in (shell_config_filenames) or\n fd.name in (shell_config_files) or\n fd.directory in (shell_config_directories))\nand not proc.name in (shell_binaries) and not exe_running_docker_save and not user_known_shell_config_modifiers\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1546.004"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Drop and execute new binary in container",
+    "desc": "Detect if an executable not belonging to the base image of a container is being executed. The drop and execute pattern can be observed very often after an attacker gained an initial foothold. is_exe_upper_layer filter field only applies for container runtimes that use overlayfs as union mount filesystem.",
+    "condition": "spawned_process and container and proc.is_exe_upper_layer=true  and not container.image.repository in (known_drop_and_execute_containers)\n",
+    "severity": "CRITICAL",
+    "techniques": []
+  },
+  {
+    "enabled": true,
+    "name": "Update Package Repository",
+    "desc": "Detect package repositories get updated",
+    "condition": "((open_write and access_repositories) or (modify and modify_repositories)) and not package_mgmt_procs and not package_mgmt_ancestor_procs and not exe_running_docker_save and not user_known_update_package_registry\n",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1072"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Write below binary dir",
+    "desc": "an attempt to write to any file below a set of binary directories",
+    "condition": "bin_dir and evt.dir = < and open_write and not package_mgmt_procs and not exe_running_docker_save and not python_running_get_pip and not python_running_ms_oms and not user_known_write_below_binary_dir_activities\n",
+    "severity": "ERROR",
+    "techniques": [
+      "T1543"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Write below monitored dir",
+    "desc": "an attempt to write to any file below a set of monitored directories",
+    "condition": "evt.dir = < and open_write and monitored_dir and not package_mgmt_procs and not coreos_write_ssh_dir and not exe_running_docker_save and not python_running_get_pip and not python_running_ms_oms and not google_accounts_daemon_writing_ssh and not cloud_init_writing_ssh and not user_known_write_monitored_dir_conditions\n",
+    "severity": "ERROR",
+    "techniques": [
+      "T1543"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Directory traversal monitored file read",
+    "desc": "Web applications can be vulnerable to directory traversal attacks that allow accessing files outside of the web app's root directory (e.g. Arbitrary File Read bugs). System directories like /etc are typically accessed via absolute paths. Access patterns outside of this (here path traversal) can be regarded as suspicious. This rule includes failed file open attempts.\n",
+    "condition": "(open_read or open_file_failed) and (etc_dir or user_ssh_directory or fd.name startswith /root/.ssh or fd.name contains \"id_rsa\") and directory_traversal and not proc.pname in (shell_binaries)",
+    "severity": "WARNING",
+    "techniques": [
+      "T1555",
+      "T1212",
+      "T1020",
+      "T1552",
+      "T1083"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Write below etc",
+    "desc": "an attempt to write to any file below /etc",
+    "condition": "write_etc_common",
+    "severity": "ERROR",
+    "techniques": [
+      "T1098"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Write below root",
+    "desc": "an attempt to write to any file directly below / or /root",
+    "condition": "root_dir and evt.dir = < and open_write and proc_name_exists and not fd.name in (known_root_files) and not fd.directory pmatch (known_root_directories) and not exe_running_docker_save and not gugent_writing_guestagent_log and not dse_writing_tmp and not zap_writing_state and not airflow_writing_state and not rpm_writing_root_rpmdb and not maven_writing_groovy and not chef_writing_conf and not kubectl_writing_state and not cassandra_writing_state and not galley_writing_state and not calico_writing_state and not rancher_writing_root and not runc_writing_exec_fifo and not mysqlsh_writing_state and not known_root_conditions and not user_known_write_root_conditions and not user_known_write_below_root_activities\n",
+    "severity": "ERROR",
+    "techniques": []
+  },
+  {
+    "enabled": true,
+    "name": "Read sensitive file trusted after startup",
+    "desc": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information) by a trusted program after startup. Trusted programs might read these files at startup to load initial state, but not afterwards.\n",
+    "condition": "sensitive_files and open_read and server_procs and not proc_is_new and proc.name!=\"sshd\" and not user_known_read_sensitive_files_activities",
+    "severity": "WARNING",
+    "techniques": [
+      "T1555",
+      "T1212",
+      "T1020",
+      "T1552",
+      "T1083"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Read sensitive file untrusted",
+    "desc": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs.\n",
+    "condition": "sensitive_files and open_read and proc_name_exists and not proc.name in (user_mgmt_binaries, userexec_binaries, package_mgmt_binaries,\n cron_binaries, read_sensitive_file_binaries, shell_binaries, hids_binaries,\n vpn_binaries, mail_config_binaries, nomachine_binaries, sshkit_script_binaries,\n in.proftpd, mandb, salt-call, salt-minion, postgres_mgmt_binaries,\n google_oslogin_\n )\nand not cmp_cp_by_passwd and not ansible_running_python and not run_by_qualys and not run_by_chef and not run_by_google_accounts_daemon and not user_read_sensitive_file_conditions and not mandb_postinst and not perl_running_plesk and not perl_running_updmap and not veritas_driver_script and not perl_running_centrifydc and not runuser_reading_pam and not linux_bench_reading_etc_shadow and not user_known_read_sensitive_files_activities and not user_read_sensitive_file_containers\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1555",
+      "T1212",
+      "T1020",
+      "T1552",
+      "T1083"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Write below rpm database",
+    "desc": "an attempt to write to the rpm database by any non-rpm related program",
+    "condition": "fd.name startswith /var/lib/rpm and open_write and not rpm_procs and not ansible_running_python and not python_running_chef and not exe_running_docker_save and not amazon_linux_running_python_yum and not user_known_write_rpm_database_activities\n",
+    "severity": "ERROR",
+    "techniques": [
+      "T1072"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "DB program spawned process",
+    "desc": "a database-server related program spawned a new process other than itself. This shouldn\\'t occur and is a follow on from some SQL injection attacks.\n",
+    "condition": "proc.pname in (db_server_binaries) and spawned_process and not proc.name in (db_server_binaries) and not postgres_running_wal_e and not user_known_db_spawned_processes\n",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1190"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Modify binary dirs",
+    "desc": "an attempt to modify any file below a set of binary directories.",
+    "condition": "bin_dir_rename and modify and not package_mgmt_procs and not exe_running_docker_save and not user_known_modify_bin_dir_activities",
+    "severity": "ERROR",
+    "techniques": [
+      "T1222.002"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Mkdir binary dirs",
+    "desc": "an attempt to create a directory below a set of binary directories.",
+    "condition": "mkdir and bin_dir_mkdir and not package_mgmt_procs and not user_known_mkdir_bin_dir_activities and not exe_running_docker_save\n",
+    "severity": "ERROR",
+    "techniques": [
+      "T1222.002"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Run shell untrusted",
+    "desc": "an attempt to spawn a shell below a non-shell application. Specific applications are monitored.",
+    "condition": "spawned_process and shell_procs and proc.pname exists and protected_shell_spawner and not proc.pname in (shell_binaries, gitlab_binaries, cron_binaries, user_known_shell_spawn_binaries,\n                       needrestart_binaries,\n                       mesos_shell_binaries,\n                       erl_child_setup, exechealthz,\n                       PM2, PassengerWatchd, c_rehash, svlogd, logrotate, hhvm, serf,\n                       lb-controller, nvidia-installe, runsv, statsite, erlexec, calico-node,\n                       \"puma reactor\")\nand not proc.cmdline in (known_shell_spawn_cmdlines) and not proc.aname in (unicorn_launche) and not consul_running_net_scripts and not consul_running_alert_checks and not nginx_starting_nginx and not nginx_running_aws_s3_cp and not run_by_package_mgmt_binaries and not serf_script and not check_process_status and not run_by_foreman and not python_mesos_marathon_scripting and not splunk_running_forwarder and not postgres_running_wal_e and not redis_running_prepost_scripts and not rabbitmq_running_scripts and not rabbitmqctl_running_scripts and not run_by_appdynamics and not user_shell_container_exclusions\n",
+    "severity": "DEBUG",
+    "techniques": [
+      "T1059.004"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Launch Privileged Container",
+    "desc": "Detect the initial process started in a privileged container. Exceptions are made for known trusted images.",
+    "condition": "container_started and container and container.privileged=true and not falco_privileged_containers and not user_privileged_containers and not redhat_image\n",
+    "severity": "INFO",
+    "techniques": [
+      "T1610"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Launch Excessively Capable Container",
+    "desc": "Detect container started with a powerful set of capabilities. Exceptions are made for known trusted images.",
+    "condition": "container_started and container and excessively_capable_container and not falco_privileged_containers and not user_privileged_containers\n",
+    "severity": "INFO",
+    "techniques": [
+      "T1610"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Launch Sensitive Mount Container",
+    "desc": "Detect the initial process started by a container that has a mount from a sensitive host directory (i.e. /proc). Exceptions are made for known trusted images.\n",
+    "condition": "container_started and container and sensitive_mount and not falco_sensitive_mount_containers and not user_sensitive_mount_containers\n",
+    "severity": "INFO",
+    "techniques": [
+      "T1610"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Launch Disallowed Container",
+    "desc": "Detect the initial process started by a container that is not in a list of allowed containers.\n",
+    "condition": "container_started and container and not allowed_containers",
+    "severity": "WARNING",
+    "techniques": [
+      "T1610"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "System user interactive",
+    "desc": "an attempt to run interactive commands by a system (i.e. non-login) user",
+    "condition": "spawned_process and system_users and interactive and not user_known_system_user_login",
+    "severity": "INFO",
+    "techniques": [
+      "T1059"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Terminal shell in container",
+    "desc": "A shell was used as the entrypoint/exec point into a container with an attached terminal.",
+    "condition": "spawned_process and container and shell_procs and proc.tty != 0 and container_entrypoint and not user_expected_terminal_shell_in_container_conditions\n",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1059"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "System procs network activity",
+    "desc": "any network activity performed by system binaries that are not expected to send or receive any network traffic",
+    "condition": "(fd.sockfamily = ip and (system_procs or proc.name in (shell_binaries))) and (inbound_outbound) and not proc.name in (known_system_procs_network_activity_binaries) and not login_doing_dns_lookup and not user_expected_system_procs_network_activity_conditions\n",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1059"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Non sudo setuid",
+    "desc": "an attempt to change users by calling setuid. sudo/su are excluded. users \"root\" and \"nobody\" suing to itself are also excluded, as setuid calls typically involve dropping privileges.\n",
+    "condition": "evt.type=setuid and evt.dir=> and (known_user_in_container or not container) and not (user.name=root or user.uid=0) and not somebody_becoming_themselves and not proc.name in (known_setuid_binaries, userexec_binaries, mail_binaries, docker_binaries,\n                      nomachine_binaries)\nand not proc.name startswith \"runc:\" and not java_running_sdjagent and not nrpe_becoming_nagios and not user_known_non_sudo_setuid_conditions\n",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1548.001"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "User mgmt binaries",
+    "desc": "activity by any programs that can manage users, passwords, or permissions. sudo and su are excluded. Activity in containers is also excluded--some containers create custom users on top of a base linux distribution at startup. Some innocuous command lines that don't actually change anything are excluded.\n",
+    "condition": "spawned_process and proc.name in (user_mgmt_binaries) and not proc.name in (su, sudo, lastlog, nologin, unix_chkpwd) and not container and not proc.pname in (cron_binaries, systemd, systemd.postins, udev.postinst, run-parts) and not proc.cmdline startswith \"passwd -S\" and not proc.cmdline startswith \"useradd -D\" and not proc.cmdline startswith \"systemd --version\" and not run_by_qualys and not run_by_sumologic_securefiles and not run_by_yum and not run_by_ms_oms and not run_by_google_accounts_daemon and not chage_list and not user_known_user_management_activities\n",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1543",
+      "T1098"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Create files below dev",
+    "desc": "creating any files below /dev other than known programs that manage devices. Some rootkits hide files in /dev.",
+    "condition": "fd.directory = /dev and (evt.type = creat or (evt.type in (open,openat,openat2) and evt.arg.flags contains O_CREAT)) and not proc.name in (dev_creation_binaries) and not fd.name in (allowed_dev_files) and not fd.name startswith /dev/tty and not user_known_create_files_below_dev_activities\n",
+    "severity": "ERROR",
+    "techniques": [
+      "T1543",
+      "T1083"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Contact K8S API Server From Container",
+    "desc": "Detect attempts to contact the K8S API Server from a container",
+    "condition": "evt.type=connect and evt.dir=< and (fd.typechar=4 or fd.typechar=6) and container and not k8s_containers and k8s_api_server and not user_known_contact_k8s_api_server_activities\n",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1565"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Unexpected K8s NodePort Connection",
+    "desc": "Detect attempts to use K8s NodePorts from a container",
+    "condition": "(inbound_outbound) and fd.sport >= 30000 and fd.sport <= 32767 and container and not nodeport_containers",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1205.001"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Launch Package Management Process in Container",
+    "desc": "Package management process ran inside container",
+    "condition": "spawned_process and container and user.name != \"_apt\" and package_mgmt_procs and not package_mgmt_ancestor_procs and not user_known_package_manager_in_container and not pkg_mgmt_in_kube_proxy\n",
+    "severity": "ERROR",
+    "techniques": [
+      "T1505"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Netcat Remote Code Execution in Container",
+    "desc": "Netcat Program runs inside container that allows remote code execution",
+    "condition": "spawned_process and container and ((proc.name = \"nc\" and (proc.args contains \"-e\" or proc.args contains \"-c\")) or\n (proc.name = \"ncat\" and (proc.args contains \"--sh-exec\" or proc.args contains \"--exec\" or proc.args contains \"-e \"\n                          or proc.args contains \"-c \" or proc.args contains \"--lua-exec\"))\n)\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1059"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Launch Suspicious Network Tool in Container",
+    "desc": "Detect network tools launched inside container",
+    "condition": "spawned_process and container and network_tool_procs and not user_known_network_tool_activities\n",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1595",
+      "T1046"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Launch Suspicious Network Tool on Host",
+    "desc": "Detect network tools launched on the host",
+    "condition": "spawned_process and not container and consider_network_tools_on_host and network_tool_procs and not user_known_network_tool_activities\n",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1595",
+      "T1046"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Search Private Keys or Passwords",
+    "desc": "Detect grep private keys or passwords activity.\n",
+    "condition": "(spawned_process and\n ((grep_commands and private_key_or_password) or\n  (proc.name = \"find\" and (proc.args contains \"id_rsa\" or proc.args contains \"id_dsa\")))\n)\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1552.001"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Clear Log Activities",
+    "desc": "Detect clearing of critical log files",
+    "condition": "open_write and access_log_files and evt.arg.flags contains \"O_TRUNC\" and not trusted_logging_images and not allowed_clear_log_files\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1070"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Remove Bulk Data from Disk",
+    "desc": "Detect process running to clear bulk data from disk",
+    "condition": "spawned_process and clear_data_procs and not user_known_remove_data_activities",
+    "severity": "WARNING",
+    "techniques": [
+      "T1485"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Delete or rename shell history",
+    "desc": "Detect shell history deletion",
+    "condition": "(modify_shell_history or truncate_shell_history) and\n   not var_lib_docker_filepath and\n   not proc.name in (docker_binaries)\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1070"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Delete Bash History",
+    "desc": "Detect bash history deletion",
+    "condition": "((spawned_process and proc.name in (shred, rm, mv) and proc.args contains \"bash_history\") or\n (open_write and fd.name contains \"bash_history\" and evt.arg.flags contains \"O_TRUNC\"))\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1070"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Launch Remote File Copy Tools in Container",
+    "desc": "Detect remote file copy tools launched in container",
+    "condition": "spawned_process and container and remote_file_copy_procs and not user_known_remote_file_copy_activities\n",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1020",
+      "T1210"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Create Symlink Over Sensitive Files",
+    "desc": "Detect symlink created over sensitive files",
+    "condition": "create_symlink and (evt.arg.target in (sensitive_file_names) or evt.arg.target in (sensitive_directory_names))\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1020",
+      "T1083",
+      "T1212",
+      "T1552",
+      "T1555"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Create Hardlink Over Sensitive Files",
+    "desc": "Detect hardlink created over sensitive files",
+    "condition": "create_hardlink and (evt.arg.oldpath in (sensitive_file_names))\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1020",
+      "T1083",
+      "T1212",
+      "T1552",
+      "T1555"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Detect crypto miners using the Stratum protocol",
+    "desc": "Miners typically specify the mining pool to connect to with a URI that begins with 'stratum+tcp'",
+    "condition": "spawned_process and (proc.cmdline contains \"stratum+tcp\" or proc.cmdline contains \"stratum2+tcp\" or proc.cmdline contains \"stratum+ssl\" or proc.cmdline contains \"stratum2+ssl\")",
+    "severity": "CRITICAL",
+    "techniques": [
+      "T1496"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "The docker client is executed in a container",
+    "desc": "Detect a k8s client tool executed inside a container",
+    "condition": "spawned_process and container and not user_known_k8s_client_container_parens and proc.name in (k8s_client_binaries)",
+    "severity": "WARNING",
+    "techniques": [
+      "T1610"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Packet socket created in container",
+    "desc": "Detect new packet socket at the device driver (OSI Layer 2) level in a container. Packet socket could be used for ARP Spoofing and privilege escalation(CVE-2020-14386) by attacker.",
+    "condition": "evt.type=socket and evt.arg[0]=AF_PACKET and container and not proc.name in (user_known_packet_socket_binaries)",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1046"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Redirect STDOUT/STDIN to Network Connection in Container",
+    "desc": "Detect redirecting stdout/stdin to network connection in container (potential reverse shell).",
+    "condition": "dup and container and evt.rawres in (0, 1, 2) and fd.type in (\"ipv4\", \"ipv6\") and not user_known_stand_streams_redirect_activities",
+    "severity": "NOTICE",
+    "techniques": [
+      "T1059"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Linux Kernel Module Injection Detected",
+    "desc": "Detect kernel module was injected (from container).",
+    "condition": "spawned_process and container and proc.name=insmod and not proc.args in (white_listed_modules) and thread.cap_effective icontains sys_module",
+    "severity": "WARNING",
+    "techniques": []
+  },
+  {
+    "enabled": true,
+    "name": "Sudo Potential Privilege Escalation",
+    "desc": "Privilege escalation vulnerability affecting sudo (<= 1.9.5p2). Executing sudo using sudoedit -s or sudoedit -i command with command-line argument that ends with a single backslash character from an unprivileged user it's possible to elevate the user privileges to root.",
+    "condition": "spawned_process and user.uid != 0 and (proc.name=sudoedit or proc.name = sudo) and (proc.args contains -s or proc.args contains -i or proc.args contains --login) and (proc.args contains \"\\ \" or proc.args endswith \\)",
+    "severity": "CRITICAL",
+    "techniques": [
+      "T1548.003"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Debugfs Launched in Privileged Container",
+    "desc": "Detect file system debugger debugfs launched inside a privileged container which might lead to container escape.",
+    "condition": "spawned_process and container and container.privileged=true and proc.name=debugfs\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1611"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Mount Launched in Privileged Container",
+    "desc": "Detect file system mount happened inside a privileged container which might lead to container escape.",
+    "condition": "spawned_process and container and container.privileged=true and proc.name=mount and not mount_info and not known_gke_mount_in_privileged_containers and not user_known_mount_in_privileged_containers\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1611"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Unprivileged Delegation of Page Faults Handling to a Userspace Process",
+    "desc": "Detect a successful unprivileged userfaultfd syscall which might act as an attack primitive to exploit other bugs",
+    "condition": "evt.type = userfaultfd and user.uid != 0 and (evt.rawres >= 0 or evt.res != -1) and not proc.name in (user_known_userfaultfd_processes)\n",
+    "severity": "CRITICAL",
+    "techniques": []
+  },
+  {
+    "enabled": true,
+    "name": "Launch Ingress Remote File Copy Tools in Container",
+    "desc": "Detect ingress remote file copy tools launched in container",
+    "condition": "spawned_process and container and (ingress_remote_file_copy_procs or curl_download) and not user_known_ingress_remote_file_copy_activities\n",
+    "severity": "NOTICE",
+    "techniques": []
+  },
+  {
+    "enabled": true,
+    "name": "Polkit Local Privilege Escalation Vulnerability (CVE-2021-4034)",
+    "desc": "This rule detects an attempt to exploit a privilege escalation vulnerability in Polkit's pkexec. By running specially crafted code, a local user can leverage this flaw to gain root privileges on a compromised system",
+    "condition": "spawned_process and user.uid != 0 and proc.name=pkexec and proc.args = ''",
+    "severity": "CRITICAL",
+    "techniques": []
+  },
+  {
+    "enabled": true,
+    "name": "Detect release_agent File Container Escapes",
+    "desc": "This rule detect an attempt to exploit a container escape using release_agent file. By running a container with certains capabilities, a privileged user can modify release_agent file and escape from the container",
+    "condition": "open_write and container and fd.name endswith release_agent and (user.uid=0 or thread.cap_effective contains CAP_DAC_OVERRIDE) and thread.cap_effective contains CAP_SYS_ADMIN",
+    "severity": "CRITICAL",
+    "techniques": [
+      "T1611"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Read environment variable from /proc files",
+    "desc": "An attempt to read process environment variables from /proc files",
+    "condition": "open_read and container and (fd.name glob /proc/*/environ) and not proc.name in (known_binaries_to_read_environment_variables_from_proc_files)\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1083"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "PTRACE attached to process",
+    "desc": "This rule detects an attempt to inject code into a process using PTRACE.",
+    "condition": "evt.type=ptrace and evt.dir=> and evt.arg.request in (5, 6, 11, 20, 27) and proc_name_exists and not known_ptrace_procs",
+    "severity": "WARNING",
+    "techniques": [
+      "T1055.008"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Find AWS Credentials",
+    "desc": "Find or grep AWS credentials",
+    "condition": "spawned_process and ((grep_commands and private_aws_credentials) or (proc.name = \"find\" and proc.args endswith \".aws/credentials\"))\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1552"
+    ]
+  },
+  {
+    "enabled": true,
+    "name": "Execution from /dev/shm",
+    "desc": "This rule detects file execution from the /dev/shm directory, a common tactic for threat actors to stash their readable+writable+(sometimes)executable files.",
+    "condition": "spawned_process and  (proc.exe startswith \"/dev/shm/\" or  (proc.cwd startswith \"/dev/shm/\" and proc.exe startswith \"./\" ) or  (shell_procs and proc.args startswith \"-c /dev/shm\") or  (shell_procs and proc.args startswith \"-i /dev/shm\") or  (shell_procs and proc.args startswith \"/dev/shm\") or  (proc.cwd startswith \"/dev/shm/\" and proc.args startswith \"./\" )) and  not container.image.repository in (falco_privileged_images, trusted_images)\n",
+    "severity": "WARNING",
+    "techniques": [
+      "T1036.005",
+      "T1059.004"
+    ]
+  }
+]

@@ -1,0 +1,508 @@
+{
+  "name": "Falco - Rules Coverage",
+  "domain": "enterprise-attack",
+  "hideDisabled": false,
+  "sorting": 3,
+  "filters": {
+    "platforms": [
+      "Linux"
+    ]
+  },
+  "versions": {
+    "attack": "12",
+    "navigator": "4.8.0",
+    "layer": "4.4"
+  },
+  "layout": {
+    "layout": "side",
+    "showName": true,
+    "showID": false,
+    "showAggregateScores": true,
+    "countUnscored": true,
+    "aggregateFunction": "average"
+  },
+  "gradient": {
+    "colors": [
+      "#fff7b3",
+      "#ff6666"
+    ],
+    "maxValue": 3,
+    "minValue": 0
+  },
+  "techniques": [
+    {
+      "techniqueID": "T1546.004",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Modify Shell Configuration File",
+          "value": "Detect attempt to modify shell configuration files"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1072",
+      "score": 2,
+      "metadata": [
+        {
+          "name": "Update Package Repository",
+          "value": "Detect package repositories get updated"
+        },
+        {
+          "name": "Write below rpm database",
+          "value": "an attempt to write to the rpm database by any non-rpm related program"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1543",
+      "score": 4,
+      "metadata": [
+        {
+          "name": "Write below binary dir",
+          "value": "an attempt to write to any file below a set of binary directories"
+        },
+        {
+          "name": "Write below monitored dir",
+          "value": "an attempt to write to any file below a set of monitored directories"
+        },
+        {
+          "name": "User mgmt binaries",
+          "value": "activity by any programs that can manage users, passwords, or permissions. sudo and su are excluded. Activity in containers is also excluded--some containers create custom users on top of a base linux distribution at startup. Some innocuous command lines that don't actually change anything are excluded.\n"
+        },
+        {
+          "name": "Create files below dev",
+          "value": "creating any files below /dev other than known programs that manage devices. Some rootkits hide files in /dev."
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1555",
+      "score": 5,
+      "metadata": [
+        {
+          "name": "Directory traversal monitored file read",
+          "value": "Web applications can be vulnerable to directory traversal attacks that allow accessing files outside of the web app's root directory (e.g. Arbitrary File Read bugs). System directories like /etc are typically accessed via absolute paths. Access patterns outside of this (here path traversal) can be regarded as suspicious. This rule includes failed file open attempts.\n"
+        },
+        {
+          "name": "Read sensitive file trusted after startup",
+          "value": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information) by a trusted program after startup. Trusted programs might read these files at startup to load initial state, but not afterwards.\n"
+        },
+        {
+          "name": "Read sensitive file untrusted",
+          "value": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs.\n"
+        },
+        {
+          "name": "Create Symlink Over Sensitive Files",
+          "value": "Detect symlink created over sensitive files"
+        },
+        {
+          "name": "Create Hardlink Over Sensitive Files",
+          "value": "Detect hardlink created over sensitive files"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1212",
+      "score": 5,
+      "metadata": [
+        {
+          "name": "Directory traversal monitored file read",
+          "value": "Web applications can be vulnerable to directory traversal attacks that allow accessing files outside of the web app's root directory (e.g. Arbitrary File Read bugs). System directories like /etc are typically accessed via absolute paths. Access patterns outside of this (here path traversal) can be regarded as suspicious. This rule includes failed file open attempts.\n"
+        },
+        {
+          "name": "Read sensitive file trusted after startup",
+          "value": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information) by a trusted program after startup. Trusted programs might read these files at startup to load initial state, but not afterwards.\n"
+        },
+        {
+          "name": "Read sensitive file untrusted",
+          "value": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs.\n"
+        },
+        {
+          "name": "Create Symlink Over Sensitive Files",
+          "value": "Detect symlink created over sensitive files"
+        },
+        {
+          "name": "Create Hardlink Over Sensitive Files",
+          "value": "Detect hardlink created over sensitive files"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1020",
+      "score": 6,
+      "metadata": [
+        {
+          "name": "Directory traversal monitored file read",
+          "value": "Web applications can be vulnerable to directory traversal attacks that allow accessing files outside of the web app's root directory (e.g. Arbitrary File Read bugs). System directories like /etc are typically accessed via absolute paths. Access patterns outside of this (here path traversal) can be regarded as suspicious. This rule includes failed file open attempts.\n"
+        },
+        {
+          "name": "Read sensitive file trusted after startup",
+          "value": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information) by a trusted program after startup. Trusted programs might read these files at startup to load initial state, but not afterwards.\n"
+        },
+        {
+          "name": "Read sensitive file untrusted",
+          "value": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs.\n"
+        },
+        {
+          "name": "Launch Remote File Copy Tools in Container",
+          "value": "Detect remote file copy tools launched in container"
+        },
+        {
+          "name": "Create Symlink Over Sensitive Files",
+          "value": "Detect symlink created over sensitive files"
+        },
+        {
+          "name": "Create Hardlink Over Sensitive Files",
+          "value": "Detect hardlink created over sensitive files"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1552",
+      "score": 6,
+      "metadata": [
+        {
+          "name": "Directory traversal monitored file read",
+          "value": "Web applications can be vulnerable to directory traversal attacks that allow accessing files outside of the web app's root directory (e.g. Arbitrary File Read bugs). System directories like /etc are typically accessed via absolute paths. Access patterns outside of this (here path traversal) can be regarded as suspicious. This rule includes failed file open attempts.\n"
+        },
+        {
+          "name": "Read sensitive file trusted after startup",
+          "value": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information) by a trusted program after startup. Trusted programs might read these files at startup to load initial state, but not afterwards.\n"
+        },
+        {
+          "name": "Read sensitive file untrusted",
+          "value": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs.\n"
+        },
+        {
+          "name": "Create Symlink Over Sensitive Files",
+          "value": "Detect symlink created over sensitive files"
+        },
+        {
+          "name": "Create Hardlink Over Sensitive Files",
+          "value": "Detect hardlink created over sensitive files"
+        },
+        {
+          "name": "Find AWS Credentials",
+          "value": "Find or grep AWS credentials"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1083",
+      "score": 7,
+      "metadata": [
+        {
+          "name": "Directory traversal monitored file read",
+          "value": "Web applications can be vulnerable to directory traversal attacks that allow accessing files outside of the web app's root directory (e.g. Arbitrary File Read bugs). System directories like /etc are typically accessed via absolute paths. Access patterns outside of this (here path traversal) can be regarded as suspicious. This rule includes failed file open attempts.\n"
+        },
+        {
+          "name": "Read sensitive file trusted after startup",
+          "value": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information) by a trusted program after startup. Trusted programs might read these files at startup to load initial state, but not afterwards.\n"
+        },
+        {
+          "name": "Read sensitive file untrusted",
+          "value": "an attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs.\n"
+        },
+        {
+          "name": "Create files below dev",
+          "value": "creating any files below /dev other than known programs that manage devices. Some rootkits hide files in /dev."
+        },
+        {
+          "name": "Create Symlink Over Sensitive Files",
+          "value": "Detect symlink created over sensitive files"
+        },
+        {
+          "name": "Create Hardlink Over Sensitive Files",
+          "value": "Detect hardlink created over sensitive files"
+        },
+        {
+          "name": "Read environment variable from /proc files",
+          "value": "An attempt to read process environment variables from /proc files"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1098",
+      "score": 2,
+      "metadata": [
+        {
+          "name": "Write below etc",
+          "value": "an attempt to write to any file below /etc"
+        },
+        {
+          "name": "User mgmt binaries",
+          "value": "activity by any programs that can manage users, passwords, or permissions. sudo and su are excluded. Activity in containers is also excluded--some containers create custom users on top of a base linux distribution at startup. Some innocuous command lines that don't actually change anything are excluded.\n"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1190",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "DB program spawned process",
+          "value": "a database-server related program spawned a new process other than itself. This shouldn\\'t occur and is a follow on from some SQL injection attacks.\n"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1222.002",
+      "score": 2,
+      "metadata": [
+        {
+          "name": "Modify binary dirs",
+          "value": "an attempt to modify any file below a set of binary directories."
+        },
+        {
+          "name": "Mkdir binary dirs",
+          "value": "an attempt to create a directory below a set of binary directories."
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1059.004",
+      "score": 2,
+      "metadata": [
+        {
+          "name": "Run shell untrusted",
+          "value": "an attempt to spawn a shell below a non-shell application. Specific applications are monitored."
+        },
+        {
+          "name": "Execution from /dev/shm",
+          "value": "This rule detects file execution from the /dev/shm directory, a common tactic for threat actors to stash their readable+writable+(sometimes)executable files."
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1610",
+      "score": 5,
+      "metadata": [
+        {
+          "name": "Launch Privileged Container",
+          "value": "Detect the initial process started in a privileged container. Exceptions are made for known trusted images."
+        },
+        {
+          "name": "Launch Excessively Capable Container",
+          "value": "Detect container started with a powerful set of capabilities. Exceptions are made for known trusted images."
+        },
+        {
+          "name": "Launch Sensitive Mount Container",
+          "value": "Detect the initial process started by a container that has a mount from a sensitive host directory (i.e. /proc). Exceptions are made for known trusted images.\n"
+        },
+        {
+          "name": "Launch Disallowed Container",
+          "value": "Detect the initial process started by a container that is not in a list of allowed containers.\n"
+        },
+        {
+          "name": "The docker client is executed in a container",
+          "value": "Detect a k8s client tool executed inside a container"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1059",
+      "score": 5,
+      "metadata": [
+        {
+          "name": "System user interactive",
+          "value": "an attempt to run interactive commands by a system (i.e. non-login) user"
+        },
+        {
+          "name": "Terminal shell in container",
+          "value": "A shell was used as the entrypoint/exec point into a container with an attached terminal."
+        },
+        {
+          "name": "System procs network activity",
+          "value": "any network activity performed by system binaries that are not expected to send or receive any network traffic"
+        },
+        {
+          "name": "Netcat Remote Code Execution in Container",
+          "value": "Netcat Program runs inside container that allows remote code execution"
+        },
+        {
+          "name": "Redirect STDOUT/STDIN to Network Connection in Container",
+          "value": "Detect redirecting stdout/stdin to network connection in container (potential reverse shell)."
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1548.001",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Non sudo setuid",
+          "value": "an attempt to change users by calling setuid. sudo/su are excluded. users \"root\" and \"nobody\" suing to itself are also excluded, as setuid calls typically involve dropping privileges.\n"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1565",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Contact K8S API Server From Container",
+          "value": "Detect attempts to contact the K8S API Server from a container"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1205.001",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Unexpected K8s NodePort Connection",
+          "value": "Detect attempts to use K8s NodePorts from a container"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1505",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Launch Package Management Process in Container",
+          "value": "Package management process ran inside container"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1595",
+      "score": 2,
+      "metadata": [
+        {
+          "name": "Launch Suspicious Network Tool in Container",
+          "value": "Detect network tools launched inside container"
+        },
+        {
+          "name": "Launch Suspicious Network Tool on Host",
+          "value": "Detect network tools launched on the host"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1046",
+      "score": 3,
+      "metadata": [
+        {
+          "name": "Launch Suspicious Network Tool in Container",
+          "value": "Detect network tools launched inside container"
+        },
+        {
+          "name": "Launch Suspicious Network Tool on Host",
+          "value": "Detect network tools launched on the host"
+        },
+        {
+          "name": "Packet socket created in container",
+          "value": "Detect new packet socket at the device driver (OSI Layer 2) level in a container. Packet socket could be used for ARP Spoofing and privilege escalation(CVE-2020-14386) by attacker."
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1552.001",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Search Private Keys or Passwords",
+          "value": "Detect grep private keys or passwords activity.\n"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1070",
+      "score": 3,
+      "metadata": [
+        {
+          "name": "Clear Log Activities",
+          "value": "Detect clearing of critical log files"
+        },
+        {
+          "name": "Delete or rename shell history",
+          "value": "Detect shell history deletion"
+        },
+        {
+          "name": "Delete Bash History",
+          "value": "Detect bash history deletion"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1485",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Remove Bulk Data from Disk",
+          "value": "Detect process running to clear bulk data from disk"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1210",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Launch Remote File Copy Tools in Container",
+          "value": "Detect remote file copy tools launched in container"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1496",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Detect crypto miners using the Stratum protocol",
+          "value": "Miners typically specify the mining pool to connect to with a URI that begins with 'stratum+tcp'"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1548.003",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Sudo Potential Privilege Escalation",
+          "value": "Privilege escalation vulnerability affecting sudo (<= 1.9.5p2). Executing sudo using sudoedit -s or sudoedit -i command with command-line argument that ends with a single backslash character from an unprivileged user it's possible to elevate the user privileges to root."
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1611",
+      "score": 3,
+      "metadata": [
+        {
+          "name": "Debugfs Launched in Privileged Container",
+          "value": "Detect file system debugger debugfs launched inside a privileged container which might lead to container escape."
+        },
+        {
+          "name": "Mount Launched in Privileged Container",
+          "value": "Detect file system mount happened inside a privileged container which might lead to container escape."
+        },
+        {
+          "name": "Detect release_agent File Container Escapes",
+          "value": "This rule detect an attempt to exploit a container escape using release_agent file. By running a container with certains capabilities, a privileged user can modify release_agent file and escape from the container"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1055.008",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "PTRACE attached to process",
+          "value": "This rule detects an attempt to inject code into a process using PTRACE."
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1036.005",
+      "score": 1,
+      "metadata": [
+        {
+          "name": "Execution from /dev/shm",
+          "value": "This rule detects file execution from the /dev/shm directory, a common tactic for threat actors to stash their readable+writable+(sometimes)executable files."
+        }
+      ]
+    }
+  ]
+}
