@@ -2,7 +2,7 @@
 
 This repository contains a tiny **Python** script that exports **Falco** YAML rulefiles to **ATT&CK Navigator** format. It can be useful to determine overall **MITRE** coverage and have a picture of what rules to develop further.
 
-The script looks for defined MITRE techniques in **"tags"** field, supports merging multipe YAML files, and knows how to handle disabled rules. Please see the **examples** folder or **usage** section for more details. You can read more Falco and MITRE here:
+The script looks for defined MITRE techniques in **"tags"** field, supports merging multipe YAML files, and knows how to handle disabled rules. Please see the **examples** folder or **usage** section for more details. You can read more about Falco and MITRE here:
 
 -   https://mitre-attack.github.io/attack-navigator/
 -   https://attack.mitre.org/matrices/enterprise/linux/
